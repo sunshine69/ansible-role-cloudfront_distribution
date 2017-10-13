@@ -1,0 +1,60 @@
+- name: get certificate facts
+  aws_acm_facts:
+    name: "{{ cloudfront_certificate_name }}"
+    profile: "{{ aws_account_name }}"
+    region: "us-east-1"
+  register: cert
+
+- name: set certificate_arn fact
+  set_fact:
+    certificate_arn: "{{ cert.certificates[0].certificate_arn }}"
+  when: cert.certificates|length == 1
+
+- name: get web acl id
+  aws_waf_facts:
+    name: "{{ cloudfront_waf }}"
+    profile: "{{ aws_account_name }}"
+  register: web_acl
+
+- name: set web_acl_id fact
+  set_fact:
+    web_acl_id: "{{ web_acl.wafs[0].web_acl_id }}"
+  when: web_acl.wafs|length == 1
+
+- name: create custom error responses parameter
+  set_fact:
+    cloudfront_custom_error_responses: >
+      {{ cloudfront_custom_error_responses + [
+           { 'error_code': item,
+             'response_page_path': cloudfront_errors.pages[item]|default(cloudfront_errors.pages.default),
+             'response_code': item|string,
+             'error_caching_min_ttl': cloudfront_errors.ttl
+           } ] }}
+  with_items: "{{ cloudfront_errors.codes|default([]) }}"
+
+- name: debug
+  debug:
+    var: item
+  with_items:
+    - "{{ cloudfront_origins }}"
+    - "{{ cloudfront_custom_error_responses }}"
+    - "{{ cloudfront_logging }}"
+    - "{{ cloudfront_certificate|default('') }}"
+    - "{{ web_acl_id|default('') }}"
+
+- name: create cloudfront distribution
+  cloudfront_distribution:
+    state: present
+    alias: "{{ env }}.{{ tld_name_public }}"
+    origins: "{{ cloudfront_origins }}"
+    purge_origins: yes
+    profile: "{{ profile|default(omit) }}"
+    logging: "{{ cloudfront_logging }}"
+    viewer_certificate: "{{ cloudfront_certificate|default(omit) }}"
+    web_acl_id: "{{ web_acl_id|default(omit) }}"
+    custom_error_responses: "{{ cloudfront_custom_error_responses }}"
+    purge_custom_error_responses: yes
+    default_cache_behavior: "{{ cloudfront_default_cache_behavior }}"
+    cache_behaviors: "{{ cloudfront_cache_behaviors }}"
+    ipv6_enabled: "{{ cloudfront_ipv6_enabled }}"
+    profile: "{{ aws_account_name }}"
