@@ -1,7 +1,7 @@
 - name: get certificate facts
   aws_acm_facts:
     name: "{{ cloudfront_certificate_name }}"
-    profile: "{{ aws_account_name }}"
+    profile: "{{ profile|default(omit) }}"
     region: "us-east-1"
   register: cert
 
@@ -13,7 +13,7 @@
 - name: get web acl id
   aws_waf_facts:
     name: "{{ cloudfront_waf }}"
-    profile: "{{ aws_account_name }}"
+    profile: "{{ profile|default(omit) }}"
   register: web_acl
 
 - name: set web_acl_id fact
@@ -48,7 +48,6 @@
     alias: "{{ env }}.{{ tld_name_public }}"
     origins: "{{ cloudfront_origins }}"
     purge_origins: yes
-    profile: "{{ profile|default(omit) }}"
     logging: "{{ cloudfront_logging }}"
     viewer_certificate: "{{ cloudfront_certificate|default(omit) }}"
     web_acl_id: "{{ web_acl_id|default(omit) }}"
@@ -57,4 +56,4 @@
     default_cache_behavior: "{{ cloudfront_default_cache_behavior }}"
     cache_behaviors: "{{ cloudfront_cache_behaviors }}"
     ipv6_enabled: "{{ cloudfront_ipv6_enabled }}"
-    profile: "{{ aws_account_name }}"
+    profile: "{{ profile|default(omit) }}"
