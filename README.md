@@ -7,6 +7,7 @@ Creates a cloudfront distribution
 Note that the below variables can use `cloudfront_get_head` which is defined
 to be a list containing `GET` and `HEAD`
 
+* `cloudfront_alias` - alias for cloudfront distribution. MANDATORY.
 * `cloudfront_cache_behaviors` - list of cache behaviors for various paths
 
   ```

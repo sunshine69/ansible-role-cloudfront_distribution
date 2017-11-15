@@ -48,7 +48,7 @@
 - name: create cloudfront distribution
   cloudfront_distribution:
     state: present
-    alias: "{{ env }}.{{ tld_name_public }}"
+    alias: "{{ cloudfront_alias }}"
     origins: "{{ cloudfront_origins }}"
     purge_origins: yes
     logging: "{{ cloudfront_logging }}"
