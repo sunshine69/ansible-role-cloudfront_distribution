@@ -15,11 +15,14 @@
     name: "{{ cloudfront_waf }}"
     profile: "{{ profile|default(omit) }}"
   register: web_acl
+  when: cloudfront_waf is defined
 
 - name: set web_acl_id fact
   set_fact:
     web_acl_id: "{{ web_acl.wafs[0].web_acl_id }}"
-  when: web_acl.wafs|length == 1
+  when:
+    - not web_acl.skipped
+    - web_acl.wafs|length == 1
 
 - name: create custom error responses parameter
   set_fact:
