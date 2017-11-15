@@ -33,7 +33,7 @@
              'response_code': item|string,
              'error_caching_min_ttl': cloudfront_errors.ttl
            } ] }}
-  with_items: "{{ cloudfront_errors.codes|default([]) }}"
+  with_items: "{{ cloudfront_errors.codes }}"
 
 - name: debug
   debug:

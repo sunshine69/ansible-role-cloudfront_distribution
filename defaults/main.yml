@@ -1,4 +1,6 @@
 cloudfront_custom_error_responses: []
+cloudfront_errors:
+  codes: []
 cloudfront_ipv6_enabled: yes
 cloudfront_get_head:
   - GET
