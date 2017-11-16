@@ -30,7 +30,7 @@
       {{ cloudfront_custom_error_responses + [
            { 'error_code': item,
              'response_page_path': cloudfront_errors.pages[item]|default(cloudfront_errors.pages.default),
-             'response_code': item|string,
+             'response_code': ((cloudfront_errors.responses|default({}))[item])|default(item),
              'error_caching_min_ttl': cloudfront_errors.ttl
            } ] }}
   with_items: "{{ cloudfront_errors.codes }}"
