@@ -36,6 +36,7 @@ to be a list containing `GET` and `HEAD`
   ```
 
 * `cloudfront_certificate_name` - name of the certificate to use for cloudfront
+* `cloudfront_default_root_object` - file to use when / is requested. Default: none
 * `cloudfront_dns` - whether to add `cloudfront_alias` to DNS. Default: no
 * `cloudfront_errors` - dictionary containing `codes` to handle,
   `pages` dict of default error page and override for specific codes, and `ttl`

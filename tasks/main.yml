@@ -57,6 +57,7 @@
     custom_error_responses: "{{ cloudfront_custom_error_responses }}"
     purge_custom_error_responses: yes
     default_cache_behavior: "{{ cloudfront_default_cache_behavior }}"
+    default_root_object: "{{ cloudfront_default_root_object|default(omit) }}"
     cache_behaviors: "{{ cloudfront_cache_behaviors }}"
     ipv6_enabled: "{{ cloudfront_ipv6_enabled }}"
     profile: "{{ profile|default(omit) }}"
