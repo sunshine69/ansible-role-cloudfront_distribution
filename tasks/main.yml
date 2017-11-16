@@ -64,10 +64,11 @@
 
 - name: ensure DNS points at cloudfront
   route53:
-    zone: "{{ cloudfront_alias.split('.')[0] }}"
+    zone: "{{ cloudfront_alias|regex_replace('^[^.]*\\.', '') }}"
     record: "{{ cloudfront_alias }}"
     value: "{{ cloudfront_distribution.domain_name }}"
     type: CNAME
+    overwrite: yes
     state: present
     profile: "{{ profile|default(omit) }}"
   when: cloudfront_dns
