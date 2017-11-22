@@ -30,7 +30,7 @@
       {{ cloudfront_custom_error_responses + [
            { 'error_code': item,
              'response_page_path': cloudfront_errors.pages[item]|default(cloudfront_errors.pages.default),
-             'response_code': item|string,
+             'response_code': ((cloudfront_errors.responses|default({}))[item])|default(item),
              'error_caching_min_ttl': cloudfront_errors.ttl
            } ] }}
   with_items: "{{ cloudfront_errors.codes }}"
@@ -57,6 +57,7 @@
     custom_error_responses: "{{ cloudfront_custom_error_responses }}"
     purge_custom_error_responses: yes
     default_cache_behavior: "{{ cloudfront_default_cache_behavior }}"
+    default_root_object: "{{ cloudfront_default_root_object|default(omit) }}"
     cache_behaviors: "{{ cloudfront_cache_behaviors }}"
     ipv6_enabled: "{{ cloudfront_ipv6_enabled }}"
     profile: "{{ profile|default(omit) }}"
@@ -64,10 +65,11 @@
 
 - name: ensure DNS points at cloudfront
   route53:
-    zone: "{{ cloudfront_alias.split('.')[0] }}"
+    zone: "{{ cloudfront_alias|regex_replace('^[^.]*\\.', '') }}"
     record: "{{ cloudfront_alias }}"
     value: "{{ cloudfront_distribution.domain_name }}"
     type: CNAME
+    overwrite: yes
     state: present
     profile: "{{ profile|default(omit) }}"
   when: cloudfront_dns
