@@ -21,7 +21,7 @@
   set_fact:
     web_acl_id: "{{ web_acl.wafs[0].web_acl_id }}"
   when:
-    - not web_acl.skipped
+    - not web_acl.skipped|default(False)
     - web_acl.wafs|length == 1
 
 - name: create custom error responses parameter
@@ -33,7 +33,7 @@
              'response_code': ((cloudfront_errors.responses|default({}))[item])|default(item),
              'error_caching_min_ttl': cloudfront_errors.ttl
            } ] }}
-  with_items: "{{ cloudfront_errors.codes }}"
+  with_items: "{{ cloudfront_errors.codes|default([]) }}"
 
 - name: debug
   debug:
@@ -49,6 +49,7 @@
   cloudfront_distribution:
     state: present
     alias: "{{ cloudfront_alias }}"
+    purge_aliases: yes
     origins: "{{ cloudfront_origins }}"
     purge_origins: yes
     logging: "{{ cloudfront_logging }}"
@@ -59,6 +60,7 @@
     default_cache_behavior: "{{ cloudfront_default_cache_behavior }}"
     default_root_object: "{{ cloudfront_default_root_object|default(omit) }}"
     cache_behaviors: "{{ cloudfront_cache_behaviors }}"
+    purge_cache_behaviors: yes
     ipv6_enabled: "{{ cloudfront_ipv6_enabled }}"
     profile: "{{ profile|default(omit) }}"
   register: cloudfront_distribution
