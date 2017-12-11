@@ -49,6 +49,7 @@
   cloudfront_distribution:
     state: present
     alias: "{{ cloudfront_alias }}"
+    aliases: "{{ cloudfront_aliases|default(omit) }}"
     purge_aliases: yes
     origins: "{{ cloudfront_origins }}"
     purge_origins: yes
