@@ -65,13 +65,15 @@
     profile: "{{ profile|default(omit) }}"
   register: cloudfront_distribution
 
-- name: ensure DNS points at cloudfront
-  route53:
-    zone: "{{ cloudfront_alias|regex_replace('^[^.]*\\.', '') }}"
-    record: "{{ cloudfront_alias }}"
-    value: "{{ cloudfront_distribution.domain_name }}"
-    type: CNAME
-    overwrite: yes
-    state: present
-    profile: "{{ profile|default(omit) }}"
+- include_role:
+    name: aws_route53
+  vars:
+    aws_route53_profile_account: "{{ aws_account_name }}"
+    aws_route53_profile: "{{  aws_route53_profile_public|default() }}"
+    aws_route53:
+      private_zone: false
+      zone: "{{ cloudfront_alias|regex_replace('^[^.]*\\.', '') }}"
+      type: CNAME
+      record: "{{ cloudfront_alias }}"
+      value: "{{ cloudfront_distribution.domain_name }}"
   when: cloudfront_dns
