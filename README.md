@@ -9,6 +9,8 @@ to be a list containing `GET` and `HEAD`
 
 * `cloudfront_alias` - alias for cloudfront distribution. MANDATORY. This value
   is also used to update route53 if `cloudfront_dns` is set
+* `cloudfront_aliases` - list of aliases for the distribution. Only required if
+  more than one alias is required.
 * `cloudfront_cache_behaviors` - list of cache behaviors for various paths
 
   ```

@@ -49,6 +49,7 @@
   cloudfront_distribution:
     state: present
     alias: "{{ cloudfront_alias }}"
+    aliases: "{{ cloudfront_aliases|default(omit) }}"
     purge_aliases: yes
     origins: "{{ cloudfront_origins }}"
     purge_origins: yes
@@ -72,8 +73,9 @@
     aws_route53_profile: "{{  aws_route53_profile_public|default(profile|default()) }}"
     aws_route53:
       private_zone: false
-      zone: "{{ cloudfront_alias|regex_replace('^[^.]*\\.', '') }}"
+      zone: "{{ item|regex_replace('^[^.]*\\.', '') }}"
       type: CNAME
-      record: "{{ cloudfront_alias }}"
+      record: "{{ item }}"
       value: "{{ cloudfront_distribution.domain_name }}"
+  with_items: "{{ cloudfront_aliases|default([]) + [cloudfront_alias] }}"
   when: cloudfront_dns
