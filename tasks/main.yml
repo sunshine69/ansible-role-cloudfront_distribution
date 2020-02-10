@@ -1,5 +1,5 @@
 - name: get certificate facts
-  aws_acm_facts:
+  aws_acm_info:
     name: "{{ cloudfront_certificate_name }}"
     profile: "{{ profile|default(omit) }}"
     region: "us-east-1"
@@ -11,7 +11,7 @@
   when: cert.certificates|length == 1
 
 - name: get web acl id
-  aws_waf_facts:
+  aws_waf_info:
     name: "{{ cloudfront_waf }}"
     profile: "{{ profile|default(omit) }}"
   register: web_acl
